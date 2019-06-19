@@ -14,11 +14,19 @@ class _PageState extends State<Page> {
   @override
   Widget build(BuildContext context) {
     return Router({
-      "/": Container(color: Colors.red, padding: EdgeInsets.all(0)),
-      "/test": Container(color: Colors.green, padding: EdgeInsets.all(30)),
-      "/test/a": Container(color: Colors.yellow, padding: EdgeInsets.all(50)),
-      "/test/abc": Container(color: Colors.blue, padding: EdgeInsets.all(60)),
-      "/logo": FlutterLogo()
+      "/": (_) => WillPopScope(child: Container(color: Colors.red),
+      onWillPop: ()async {
+        log("popping scope from route");
+        return false;
+      }),
+      "/test": (_) => Container(color: Colors.green),
+      "/test/a": (_) => Container(color: Colors.yellow),
+      "/test/abc": (_) => WillPopScope(child: Container(color: Colors.blue),
+          onWillPop: ()async {
+            log("popping scope from inner route");
+            return false;
+          }),
+      "/logo": (_) => FlutterLogo()
     },
         "/test/abc",
         "/logo"
@@ -27,7 +35,7 @@ class _PageState extends State<Page> {
 }
 
 class Router extends StatefulWidget {
-  final Map<String, Widget> routes;
+  final Map<String, Widget Function(BuildContext)> routes;
   final String initial;
   final String unknown;
   
@@ -40,7 +48,7 @@ class Router extends StatefulWidget {
 }
 
 class _RouterState extends State<Router> {
-  final Map<String, Widget> routes;
+  final Map<String, Widget Function(BuildContext)> routes;
   final String initial;
   final String unknown;
 
@@ -48,11 +56,12 @@ class _RouterState extends State<Router> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(child: Navigator(
+    return Container(child: WillPopScope(child:
+    Navigator(
         initialRoute: initial,
         onUnknownRoute: (settings) => PageRouteBuilder(
             settings: settings,
-            pageBuilder: (ctx, animIn, animOut) => routes[unknown]),
+            pageBuilder: (ctx, animIn, animOut) => routes[unknown](context)),
         onGenerateRoute: (settings) {
             return PageRouteBuilder(
                 settings: settings,
@@ -60,13 +69,16 @@ class _RouterState extends State<Router> {
                   var route = routes[settings.name];
                   print(settings);
                   if (route == null) {
-                    return routes[unknown];
+                    return routes[unknown](context);
                   }
-                  return route;
+                  return route(context);
                 }
             );
-        })
+        }),
+        onWillPop: ()async {
+      print("not popping, router state");
+      return false;
+    })
     );
   }
-  
 }
