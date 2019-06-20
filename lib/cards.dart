@@ -21,11 +21,10 @@ class _PageState extends State<Page> {
           child: Container(color: Colors.blue)
       ),
       "/yellow": (ctx, registerOnPop) {
-        registerOnPop(() {
-          Navigator.of(ctx).pop();
-          return false;
-        });
-        return Container(color: Colors.yellow, child: FlutterLogo()
+        return WillPopScope(
+            onWillPop: ()async => false,
+            child: Container(color: Colors.yellow, child: FlutterLogo()
+            )
         );
       },
       "/unknown": (_, _f) => Placeholder()
@@ -64,7 +63,6 @@ class _RouterState extends State<Router> {
   @override
   Widget build(BuildContext context) {
     return Container(
-        child: WillPopScope(
             child: Navigator(
                 initialRoute: initial,
                 onUnknownRoute: (settings) => PageRouteBuilder(
@@ -83,10 +81,7 @@ class _RouterState extends State<Router> {
                         }
                         return route(ctx, (onPop) => _registerOnPop(_currentRoute, onPop));
                       });
-                }),
-            onWillPop: () async {
-              final onPop = _onPop[_currentRoute];
-              return onPop != null ? onPop() : true;
-            }));
+                })
+    );
   }
 }
