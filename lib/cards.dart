@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
+import 'eligability-form.dart';
+
 class Page extends StatefulWidget {
   @override
   _PageState createState() {
@@ -28,50 +30,15 @@ class PopWidgetsBindingObserver extends WidgetsBindingObserver {
 
 class _PageState extends State<Page> {
 
-  bool checked = false;
-  String name = "";
-
   @override
   Widget build(BuildContext context) {
     return Router({
       "/": (_) => Container(),
-      "/blue": (ctx) {
-        final formKey = GlobalKey<FormState>();
-
-        // TODO: use text editing controller and extract form to seperate class
-        // TODO: checkbos field look at https://medium.com/saugo360/creating-custom-form-fields-in-flutter-85a8f46c2f41
-        return Form(
-              key: formKey,
-              child: FractionallySizedBox(widthFactor: 1/3,
-              child: Column(children: <Widget>[
-               TextFormField(
-                 decoration: InputDecoration(labelText: "Name"),
-                 initialValue: name,
-                 validator: (input) => input == "" ? "enter something" : null,
-               ),
-                FormField(validator: (args) => checked? null : "please check the box",
-                    builder: (ctx) => Checkbox(value: checked, onChanged: (newChecked) {
-                      setState(() {
-                        checked = newChecked;
-                      });
-                    })
-                ),
-                RaisedButton(
-                  child: Text("GO"),
-                  onPressed: () {
-                    if (formKey.currentState.validate()) {
-                      Navigator.of(ctx).pushNamed("/yellow");
-                    }
-                  }
-                  )
-              ]))
-          );
-      },
+      "/blue": (ctx) => EligibilityForm(),
       "/yellow": (ctx) {
         return _BlockingPage();
       },
-      "/unknown": (_) => Placeholder()
-    }, "/blue", "/unknown");
+    }, "/blue", "/blue");
   }
 }
 
@@ -139,23 +106,22 @@ class _BlockingPageState extends State<_BlockingPage> {
       showDialog(
         context: context,
         barrierDismissible: false,
-        builder: (ctx) => AlertDialog(title: Text("leave all this yellowy goodness for blue?"),
+        builder: (ctx) => AlertDialog(title: Text("Do you really want to go back?"),
         actions: <Widget>[
           RaisedButton(
-              child: Text("NO"),
+              child: Text("no"),
               textColor: Theme.of(ctx).colorScheme.onPrimary,
               onPressed: () {
                 Navigator.pop(ctx);
               }
               ),
-          FlatButton(child: Text("yes :("),
+          FlatButton(child: Text("yes"),
               onPressed: () {
             Navigator.pop(ctx);
             Navigator.pop(context);
           })
-        ],)
+        ])
       );
-      return ;
     });
   }
 
@@ -167,10 +133,9 @@ class _BlockingPageState extends State<_BlockingPage> {
     WidgetsBinding.instance.removeObserver(_popObserver);
   }
 
-
   @override
   Widget build(BuildContext context) {
-    return Container(color: Colors.yellow, child: FlutterLogo());
+    return Container(child: FlutterLogo());
   }
 
   @override
