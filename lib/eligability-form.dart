@@ -1,6 +1,6 @@
 
-import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
+import 'package:flutter_web/material.dart';
+import 'package:flutter_web/widgets.dart';
 
 class EligibilityForm extends StatefulWidget {
   @override
@@ -27,7 +27,6 @@ class _EligibilityState extends State<EligibilityForm> {
                 initialValue: "",
                 validator: (input) => input == "" ? "enter something" : null,
                 onSaved: (value) {
-                  debugPrint("saving form text $value");
                   setState(() {
                     formData.name = value;
                   });
@@ -37,7 +36,6 @@ class _EligibilityState extends State<EligibilityForm> {
                   initialValue: false,
                   validator: (checked) => checked? null : "please check the box",
                   onSaved: (value) {
-                    debugPrint("saving form checkbox $value");
                     formData.checked = value;
                   },
                   builder: (state) {
@@ -70,7 +68,6 @@ class _EligibilityState extends State<EligibilityForm> {
                   onPressed: () {
                     if (formKey.currentState.validate()) {
                       formKey.currentState.save();
-                      debugPrint("form: $formData");
                       Navigator.of(context).pushNamed("/yellow");
                     }
                   }

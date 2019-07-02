@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter_web/material.dart';
 import 'package:hello_flutter/report.dart' as report;
 import 'package:hello_flutter/cards.dart' as cards;
 import 'package:hello_flutter/score.dart' as score;
